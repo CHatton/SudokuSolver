@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 import javax.swing.BorderFactory;
@@ -14,10 +15,15 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.border.EmptyBorder;
 
 public class SudokuSolver extends JFrame {
 
 	final static int SIZE = 9;
+	static boolean isSolving = false;
+	static boolean isEmpty = true;
+
+	static int waitTime = 10; // determines length of SHOW button
 	// static int[][] sudoku = new int[SIZE][SIZE];
 	static JLabel[][] grid = new JLabel[SIZE][SIZE];
 
@@ -27,21 +33,20 @@ public class SudokuSolver extends JFrame {
 	static JButton randomPuzzleButton = new JButton();
 	static JButton enterPuzzleButton = new JButton();
 	static JButton clearButton = new JButton();
+
 	// BUTTONS
 
 	public static void main(String[] args) {
-
+		
+		
 		start();
-		showBoard(fillBoard(Premade.grid2));
-
-		// System.out.println(solve(0, 0, false));
-		// CompletableFuture.runAsync(() -> solve(arr9,0, 0, true));
-		// solve(0, 0, true);
-		// showBoard();
+		
+		showBoard(randomFill());
+		
 
 	} // main
 
-	SudokuSolver() { // main GUI
+	public SudokuSolver() { // main GUI
 
 		super("Sudoku Solver (Recursion & Backtracking Method) - Cian Hatton"); // title
 																				// text
@@ -50,7 +55,7 @@ public class SudokuSolver extends JFrame {
 		setLocationRelativeTo(null); // centered
 		setSize(800, 800); // creates a 900x800 window
 		setResizable(false);// user can't change the window size
-		setBackground(Color.BLUE);
+		// setBackground(Color.BLUE);
 
 		setLayout(new GridLayout(SIZE + 1, SIZE, 5, 5));
 
@@ -73,14 +78,16 @@ public class SudokuSolver extends JFrame {
 
 		add(showStepsButton);
 		showStepsButton.setText("SHOW");
-		showStepsButton.setToolTipText("Goes through the process of solving the puzzle"); // on
-																							// hover
+		showStepsButton.setToolTipText(
+				"Goes through the process of solving the puzzle," + " depending on the difficulty of the puzzle, "
+						+ "this process make take a longer time!" + " for results, press the 'SOLVE' button instead."); // on
+		// hover
 
 		add(new JLabel()); // fill grid slot
 
 		add(randomPuzzleButton);
-		randomPuzzleButton.setText("PREMADE");
-		randomPuzzleButton.setToolTipText("Provides one of 5 unique premade puzzles");
+		randomPuzzleButton.setText("RND");
+		randomPuzzleButton.setToolTipText("Provides one of 6 unique premade puzzles");
 
 		add(new JLabel()); // fill grid slot
 
@@ -99,46 +106,61 @@ public class SudokuSolver extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 
-				int[][] b = getBoard(); // get current board state
+				if (isEmpty) {
+					JOptionPane.showMessageDialog(null, "Board is empty!");
+				} else if (isSolving) {
+					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
+				} else {
 
-				if (solve(b, 0, 0, false)) { // if solvable
-					showBoard(b); // show result
-				} else { // impossible to solve
-					JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
-					showBoard(b); // show result
-				}
+					int[][] b = getBoard(); // get current board state
+
+					if (solve(b, 0, 0, false)) { // if solvable
+						showBoard(b); // show result
+					} else { // impossible to solve
+						JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
+						showBoard(b); // show result
+					}
+				} // !isSolving
 			}
-
 		});
 
 		showStepsButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 
-				int[][] b = getBoard(); // get board state
-				int[][] c = getBoard(); // get second current board state
+				if (isEmpty) {
+					JOptionPane.showMessageDialog(null, "Board is empty!");
+				} else if (isSolving) {
+					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
+				} else {
 
-				if (solve(c, 0, 0, false)) { // if solvable
+					int[][] b = getBoard(); // get board state
+					int[][] c = getBoard(); // get second current board state
 
-					for (int i = 0; i < SIZE; i++) {
-						for (int j = 0; j < SIZE; j++) {
-							grid[i][j].setBackground(Color.GRAY);
-							// reset colour so colour from previous
-							// test bleeds through
+					if (solve(c, 0, 0, false)) { // if solvable
+
+						for (int i = 0; i < SIZE; i++) {
+							for (int j = 0; j < SIZE; j++) {
+								grid[i][j].setBackground(Color.GRAY);
+								// reset colour so colour from previous
+								// test bleeds through
+							}
 						}
+						isSolving = true; // prevents other buttons from being
+											// pressed
+						CompletableFuture.runAsync(() -> solve(b, 0, 0, true));
+					} else { // not solvable
+						JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
+						showBoard(b); // show result
 					}
 
-					CompletableFuture.runAsync(() -> solve(b, 0, 0, true));
-				} else { // not solvable
-					JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
-					showBoard(b); // show result
+					showBoard(b);
+					System.out.println("SHOW STEPS DONE");
+					// solve(b,0,0,true);
+					// run solve in a separate thread to prevent locking up
+					// Java 8 feature
+					// showBoard();
 				}
-
-				showBoard(b);
-				// solve(b,0,0,true);
-				// run solve in a separate thread to prevent locking up
-				// Java 8 feature
-				// showBoard();
 			}
 
 		});
@@ -147,6 +169,12 @@ public class SudokuSolver extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 
+				if (isSolving) {
+					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
+				} else {
+					isEmpty = false;
+					showBoard(randomFill());
+				} // !isSolving
 			}
 
 		});
@@ -155,16 +183,27 @@ public class SudokuSolver extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 
+				if (isSolving) {
+					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
+				} else {
+					new InputGrid();
+				}
+
 			}
 
 		});
 
-		clearButton.addActionListener(new ActionListener() { // working as intended, clears the board
-
+		clearButton.addActionListener(new ActionListener() {
+			// Clears the board
 			public void actionPerformed(ActionEvent e) {
 
-				int[][] b = fillBoard(); // make an empty board
-				showBoard(b); // show empty board
+				if (isSolving) {
+					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
+				} else {
+					isEmpty = true;
+					int[][] b = fillBoard(); // make an empty board
+					showBoard(b); // show empty board
+				}
 
 			}
 
@@ -202,6 +241,7 @@ public class SudokuSolver extends JFrame {
 			}
 		}
 		SudokuSolver game = new SudokuSolver();
+		System.out.println("Game Started!");
 		// newGame();
 		showBoard(board);
 	}
@@ -218,10 +258,6 @@ public class SudokuSolver extends JFrame {
 				}
 			}
 		}
-
-		// if(board[SIZE-1][SIZE-1] != 0){
-		// grid[SIZE - 1][SIZE - 1].setText(" " + board[SIZE - 1][SIZE - 1]);
-		// }
 	} // showBoard
 
 	public static int[][] fillBoard() {
@@ -266,9 +302,8 @@ public class SudokuSolver extends JFrame {
 			}
 		} // check if the col contains the same value
 
-		
-			// TOP ROW
-		if (row < 3 && col < 3) { // top left segment 
+		// TOP ROW
+		if (row < 3 && col < 3) { // top left segment
 
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
@@ -279,9 +314,8 @@ public class SudokuSolver extends JFrame {
 			}
 
 		}
-		
-		
-		else if (row < 3 && (col < 6 && col > 2)){ // top mid segment 
+
+		else if (row < 3 && (col < 6 && col > 2)) { // top mid segment
 
 			for (int i = 0; i < 3; i++) {
 				for (int j = 3; j < 6; j++) {
@@ -290,8 +324,8 @@ public class SudokuSolver extends JFrame {
 					}
 				}
 			}
-		} 
-		
+		}
+
 		else if (row < 3 && col > 5) { // top right segment *
 
 			for (int i = 0; i < 3; i++) {
@@ -304,8 +338,8 @@ public class SudokuSolver extends JFrame {
 			// TOP ROW
 
 			// MID ROW
-		} 
-		
+		}
+
 		else if ((row > 2 && row < 6) && col < 3) { // mid left *
 
 			for (int i = 3; i < 6; i++) {
@@ -317,8 +351,8 @@ public class SudokuSolver extends JFrame {
 			}
 
 		}
-		
-		else if ((row > 2 && row < 6)&&( col > 2 && col < 6)) { // mid *
+
+		else if ((row > 2 && row < 6) && (col > 2 && col < 6)) { // mid *
 
 			for (int i = 3; i < 6; i++) {
 				for (int j = 3; j < 6; j++) {
@@ -328,8 +362,8 @@ public class SudokuSolver extends JFrame {
 				}
 			}
 
-		} 
-		
+		}
+
 		else if ((row > 2 && row < 6) && col > 5) { // mid right
 
 			for (int i = 3; i < 6; i++) {
@@ -352,8 +386,8 @@ public class SudokuSolver extends JFrame {
 				}
 			}
 
-		} 
-		
+		}
+
 		else if (row > 5 && (col > 2 && col < 6)) {// bottom mid
 
 			for (int i = 6; i < SIZE; i++) {
@@ -364,8 +398,8 @@ public class SudokuSolver extends JFrame {
 				}
 			}
 
-		} 
-		
+		}
+
 		else { // bottom right
 
 			for (int i = 6; i < SIZE; i++) {
@@ -382,12 +416,11 @@ public class SudokuSolver extends JFrame {
 		return result;
 	}// isValid
 
-
 	public static boolean solve(int[][] board, int row, int col, boolean showSteps) {
 
 		if (showSteps) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(waitTime);
 			} catch (InterruptedException e) {
 
 				e.printStackTrace();
@@ -425,6 +458,13 @@ public class SudokuSolver extends JFrame {
 
 				if (row == SIZE - 1 && col == SIZE - 1) {
 					showBoard(board);
+
+					if (showSteps) {
+						isSolving = false;
+						System.out.println(isSolving);
+						JOptionPane.showMessageDialog(null, "Puzzle Solved!");
+					}
+
 					// showBoard needed to print final value won't be reached
 					// need to add one here to update board for last time
 					return true;
@@ -445,5 +485,51 @@ public class SudokuSolver extends JFrame {
 		// reset position for when we attempt again
 		return false;
 	} // solve
+
+	public static void makeGray() {
+		for(int row = 0; row < SIZE; row++){
+			for(int col = 0; col < SIZE; col++){
+				grid[row][col].setBackground(Color.GRAY);
+			}
+		}
+	}
+	
+	public static int[][] randomFill(){
+		Random rnd = new Random();
+
+		int puzzle = rnd.nextInt(6);
+
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				grid[i][j].setBackground(Color.GRAY);
+			}
+		} // resets background colour
+
+		isEmpty = false;
+
+		switch (puzzle) {
+		case 0:
+			return Premade.grid1;
+
+		case 1:
+			return Premade.grid2;
+	
+		case 2:
+			return Premade.grid3;
+		
+		case 3:
+			return Premade.grid4;
+		
+		case 4:
+			return Premade.grid5;
+
+		case 5:
+			return Premade.grid6;
+
+		} // chooses one of 6 puzzles
+		
+		return new int[SIZE][SIZE];
+			
+	}
 
 } // SudokuSolver
