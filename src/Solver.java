@@ -4,6 +4,8 @@ import javax.swing.JOptionPane;
 
 public abstract class Solver {
 
+	
+	static boolean isSolving = false;
 	final static int SIZE = 9;
 
 	public static boolean isValid(int[][] board, int row, int col, int num) {
@@ -172,12 +174,6 @@ public abstract class Solver {
 				if (row == SIZE - 1 && col == SIZE - 1) {
 					GameBoard.showBoard(board);
 
-					if (showSteps) {
-						GameBoard.isSolving = false;
-						System.out.println(GameBoard.isSolving);
-						JOptionPane.showMessageDialog(null, "Puzzle Solved!");
-					}
-
 					// showBoard needed to print final value won't be reached
 					// need to add one here to update board for last time
 					return true;
@@ -199,4 +195,16 @@ public abstract class Solver {
 		return false;
 	} // solve
 
+	public static void solveWithPause(int[][] board){
+		isSolving = true;
+		solve(board,0,0,true);
+		isSolving = false;
+		JOptionPane.showMessageDialog(null, "Puzzle Solved!");
+		
+	}
+	
+	public static boolean getSolving(){
+		return isSolving;
+	}
+	
 } // Solver Class

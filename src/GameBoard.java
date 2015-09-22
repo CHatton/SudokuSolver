@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
 public class GameBoard extends JFrame {
 
 	final static int SIZE = 9;
-	static volatile boolean isSolving = false;
+
 	static boolean isEmpty = true;
 
 	static int waitTime = 1; // determines length of SHOW button
@@ -104,9 +104,10 @@ public class GameBoard extends JFrame {
 
 				if (isEmpty) {
 					JOptionPane.showMessageDialog(null, "Board is empty!");
-				} else if (isSolving) {
-					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
-				} else {
+					
+				} else if(Solver.getSolving()){
+					JOptionPane.showMessageDialog(null,"STILL SOLVING!");
+				}else{
 
 					int[][] b = getBoard(); // get current board state
 
@@ -124,46 +125,33 @@ public class GameBoard extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 
-				if (isEmpty) {
-					JOptionPane.showMessageDialog(null, "Board is empty!");
-				} else if (isSolving) {
-					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
-				} else {
+				int[][] b = getBoard(); // get board state
+				int[][] c = getBoard(); // get second current board state
 
-					int[][] b = getBoard(); // get board state
-					int[][] c = getBoard(); // get second current board state
+				if (Solver.solve(c, 0, 0, false)) { // if solvable
 
-					if (Solver.solve(c, 0, 0, false)) { // if solvable
+					makeGray();
 
-						makeGray();
-
-						isSolving = true; // prevents other buttons from being
-											// pressed
-						CompletableFuture.runAsync(() -> Solver.solve(b, 0, 0, true));
-					} else { // not solvable
-						JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
-						showBoard(b); // show result
-					}
-
-					showBoard(b);
-					System.out.println("SHOW STEPS DONE");
-		
+					CompletableFuture.runAsync(() -> Solver.solveWithPause(b));
+				} else { // not solvable
+					JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
+					showBoard(b); // show result
 				}
-			}
 
+				showBoard(b);
+				System.out.println("SHOW STEPS DONE");
+
+			}
 		});
 
 		randomPuzzleButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 
-				if (isSolving) {
-					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
-				} else {
-					isEmpty = false;
-					showBoard(randomFill());
-				} // !isSolving
-			}
+			
+				isEmpty = false;
+				showBoard(randomFill());
+			} // !isSolving
 
 		});
 
@@ -171,11 +159,9 @@ public class GameBoard extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 
-				if (isSolving) {
-					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
-				} else {
-					new InputGrid();
-				}
+
+
+				new InputGrid();
 
 			}
 
@@ -185,13 +171,11 @@ public class GameBoard extends JFrame {
 			// Clears the board
 			public void actionPerformed(ActionEvent e) {
 
-				if (isSolving) {
-					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
-				} else {
-					isEmpty = true;
-					int[][] b = fillBoard(); // make an empty board
-					showBoard(b); // show empty board
-				}
+			
+
+				isEmpty = true;
+				int[][] b = fillBoard(); // make an empty board
+				showBoard(b); // show empty board
 
 			}
 

@@ -44,28 +44,24 @@ public class InputGrid extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 
-				if (GameBoard.isSolving) {
-					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
-				} else {
+				int[][] board = new int[9][9];
 
-					int[][] board = new int[9][9];
+				for (int row = 0; row < 9; row++) {
+					for (int col = 0; col < 9; col++) {
 
-					for (int row = 0; row < 9; row++) {
-						for (int col = 0; col < 9; col++) {
-
-							try { 
-								board[row][col] = Integer.parseInt(in[row][col].getText());
-							} catch (NumberFormatException n) { // if user puts in an invalid character
-								System.out.println("Invalid Value Assigned to grid.");
-							}
-
+						try {
+							board[row][col] = Integer.parseInt(in[row][col].getText());
+						} catch (NumberFormatException n) { // if user puts in
+															// an invalid
+															// character
+							System.out.println("Invalid Value Assigned to grid.");
 						}
+
 					}
-
-					GameBoard.makeGray();
-					GameBoard.showBoard(board);
-
 				}
+
+				GameBoard.makeGray();
+				GameBoard.showBoard(board);
 
 			}
 
