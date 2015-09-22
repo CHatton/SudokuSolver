@@ -44,7 +44,7 @@ public class InputGrid extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 
-				if (SudokuSolver.isSolving) {
+				if (GameBoard.isSolving) {
 					JOptionPane.showMessageDialog(null, "Please wait for puzzle to solve!");
 				} else {
 
@@ -62,8 +62,8 @@ public class InputGrid extends JFrame {
 						}
 					}
 
-					SudokuSolver.makeGray();
-					SudokuSolver.showBoard(board);
+					GameBoard.makeGray();
+					GameBoard.showBoard(board);
 
 				}
 
