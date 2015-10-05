@@ -7,7 +7,10 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 import javax.swing.BorderFactory;
@@ -20,9 +23,7 @@ public class GameBoard extends JFrame {
 
 	final static int SIZE = 9;
 
-	static boolean isEmpty = true;
-
-	static int waitTime = 1; // determines length of SHOW button
+	static int waitTime = 15; // determines length of SHOW button
 
 	static JLabel[][] grid = new JLabel[SIZE][SIZE];
 
@@ -35,10 +36,14 @@ public class GameBoard extends JFrame {
 
 	// BUTTONS
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
+
+		Scanner premade = new Scanner(new FileReader("premadePuzzles.dat"));
 
 		start();
-		showBoard(randomFill());
+		showBoard(randomFill(premade));
+
+		premade.close();
 
 	} // main
 
@@ -102,14 +107,14 @@ public class GameBoard extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 
-				if (isEmpty) {
-					JOptionPane.showMessageDialog(null, "Board is empty!");
-					
-				} else if(Solver.getSolving()){
-					JOptionPane.showMessageDialog(null,"STILL SOLVING!");
-				}else{
+				int[][] b = getBoard(); // get current board state
 
-					int[][] b = getBoard(); // get current board state
+				if (isEmptyBoard(b)) {
+					JOptionPane.showMessageDialog(null, "Board is empty!");
+
+				} else if (Solver.getSolving()) {
+					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
+				} else {
 
 					if (Solver.solve(b, 0, 0, false)) { // if solvable
 						showBoard(b); // show result
@@ -128,41 +133,70 @@ public class GameBoard extends JFrame {
 				int[][] b = getBoard(); // get board state
 				int[][] c = getBoard(); // get second current board state
 
-				if (Solver.solve(c, 0, 0, false)) { // if solvable
+				if (Solver.getSolving()) {
+					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
+				} else if(isEmptyBoard(b)){
+					System.out.println("Empty Board");
+				}else if(boardFull(b)){
+					System.out.println("Full board");
+					
+				}else if (Solver.solve(c, 0, 0, false)) { // if solvable
+						makeGray();
+						CompletableFuture.runAsync(() -> Solver.solveWithPause(b));
+					} else { // not solvable
+						JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
+						showBoard(b); // show result
+					}
 
-					makeGray();
-
-					CompletableFuture.runAsync(() -> Solver.solveWithPause(b));
-				} else { // not solvable
-					JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
-					showBoard(b); // show result
+					showBoard(b);
 				}
-
-				showBoard(b);
-				System.out.println("SHOW STEPS DONE");
-
 			}
-		});
+		);
 
 		randomPuzzleButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 
-			
-				isEmpty = false;
-				showBoard(randomFill());
-			} // !isSolving
+				if (Solver.getSolving()) {
+					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
+				} else {
 
+					Scanner premade;
+
+					try {
+						premade = new Scanner(new FileReader("premadePuzzles.dat"));
+						int numLines = 0;
+
+						while (premade.hasNext()) {
+							premade.nextLine();
+							numLines++;
+						}
+
+						premade.close();
+
+						premade = new Scanner(new FileReader("premadePuzzles.dat"));
+
+						Random rnd = new Random();
+						int num = rnd.nextInt(numLines);
+
+						for (int i = 0; i < num; i++) {
+							premade.nextLine();
+						} // skip lines
+
+						showBoard(randomFill(premade));
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
+
+					makeGray();
+				}
+			}
 		});
 
 		enterPuzzleButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-
-
-
 				new InputGrid();
-
 			}
 
 		});
@@ -171,19 +205,20 @@ public class GameBoard extends JFrame {
 			// Clears the board
 			public void actionPerformed(ActionEvent e) {
 
-			
+				if (Solver.getSolving()) {
+					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
+				} else {
 
-				isEmpty = true;
-				int[][] b = fillBoard(); // make an empty board
-				showBoard(b); // show empty board
-
+					int[][] b = fillBoard(); // make an empty board
+					showBoard(b); // show empty board
+				}
 			}
 
 		});
 
 		// BUTTON FUNCTIONS
 
-	} // SudokuGame() Constructor
+	} // Constructor
 
 	public static void start() {
 
@@ -196,7 +231,7 @@ public class GameBoard extends JFrame {
 		}
 		GameBoard game = new GameBoard();
 		System.out.println("Game Started!");
-		// newGame();
+
 		showBoard(board);
 	}
 
@@ -206,15 +241,14 @@ public class GameBoard extends JFrame {
 
 		for (int row = 0; row < SIZE; row++) {
 			for (int col = 0; col < SIZE; col++) {
-				if (GameBoard.grid[row][col].getText().trim().equals("")) {
+				if (grid[row][col].getText().trim().equals("")) {
 					board[row][col] = 0;
 				} else {
-					board[row][col] = Integer.parseInt(GameBoard.grid[row][col].getText().trim());
+					board[row][col] = Integer.parseInt(grid[row][col].getText().trim());
 				}
 
 			}
 		}
-
 		return board;
 	} // getBoard
 
@@ -267,42 +301,42 @@ public class GameBoard extends JFrame {
 		}
 	}
 
-	public static int[][] randomFill() {
-		Random rnd = new Random();
+	public static int[][] randomFill(Scanner file) {
 
-		int puzzle = rnd.nextInt(6);
+		int board[][] = new int[SIZE][SIZE];
 
-		for (int i = 0; i < SIZE; i++) {
-			for (int j = 0; j < SIZE; j++) {
-				grid[i][j].setBackground(Color.GRAY);
+		for (int row = 0; row < SIZE; row++) {
+			for (int col = 0; col < SIZE; col++) {
+				board[row][col] = file.nextInt();
 			}
-		} // resets background colour
-
-		isEmpty = false;
-
-		switch (puzzle) {
-		case 0:
-			return Premade.grid1;
-
-		case 1:
-			return Premade.grid2;
-
-		case 2:
-			return Premade.grid3;
-
-		case 3:
-			return Premade.grid4;
-
-		case 4:
-			return Premade.grid5;
-
-		case 5:
-			return Premade.grid6;
-
-		} // chooses one of 6 puzzles
-
-		return new int[SIZE][SIZE];
-
+		}
+		file.close();
+		return board;
 	}
 
+	public static boolean isEmptyBoard(int[][] board) {
+		for (int row = 0; row < SIZE; row++) {
+			for (int col = 0; col < SIZE; col++) {
+				if (board[row][col] != 0) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public static boolean boardFull(int[][] board){
+		
+		for(int row = 0; row < SIZE; row++){
+			
+			for(int col = 0; col < SIZE; col++){
+				if(board[row][col] == 0){
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 } // SudokuSolver

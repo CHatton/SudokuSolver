@@ -4,137 +4,127 @@ import javax.swing.JOptionPane;
 
 public abstract class Solver {
 
-	
 	static boolean isSolving = false;
 	final static int SIZE = 9;
 
 	public static boolean isValid(int[][] board, int row, int col, int num) {
-		boolean result = true; // assume position is valid
 
 		for (int i = 0; i < SIZE; i++) {
 			if (board[i][col] == num) {
-				result = false;
+				return false;
 			}
 		} // check if the row contains the same value
 
 		for (int i = 0; i < SIZE; i++) {
+
 			if (board[row][i] == num) {
-				result = false;
+				return false;
 			}
 		} // check if the col contains the same value
 
 		// TOP ROW
 		if (row < 3 && col < 3) { // top left segment
 
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					if (board[i][j] == num) {
-						result = false;
-					}
-				}
+			if (checkSegment(board, 0, 3, 0, 3, num) == false) {
+				return false;
 			}
 
 		}
 
 		else if (row < 3 && (col < 6 && col > 2)) { // top mid segment
 
-			for (int i = 0; i < 3; i++) {
-				for (int j = 3; j < 6; j++) {
-					if (board[i][j] == num) {
-						result = false;
-					}
-				}
+			if (checkSegment(board, 0, 3, 3, 6, num) == false) {
+				return false;
 			}
 		}
 
 		else if (row < 3 && col > 5) { // top right segment *
 
-			for (int i = 0; i < 3; i++) {
-				for (int j = 6; j < SIZE; j++) {
-					if (board[i][j] == num) {
-						result = false;
-					}
-				}
+			if (checkSegment(board, 0, 3, 6, SIZE, num) == false) {
+				return false;
 			}
-			// TOP ROW
-
-			// MID ROW
 		}
 
 		else if ((row > 2 && row < 6) && col < 3) { // mid left *
 
-			for (int i = 3; i < 6; i++) {
-				for (int j = 0; j < 3; j++) {
-					if (board[i][j] == num) {
-						result = false;
-					}
-				}
+			if (checkSegment(board, 3, 6, 0, 3, num) == false) {
+				return false;
 			}
-
 		}
 
 		else if ((row > 2 && row < 6) && (col > 2 && col < 6)) { // mid *
 
-			for (int i = 3; i < 6; i++) {
-				for (int j = 3; j < 6; j++) {
-					if (board[i][j] == num) {
-						result = false;
-					}
-				}
+			if (checkSegment(board, 3, 6, 3, 6, num) == false) {
+				return false;
 			}
-
 		}
 
 		else if ((row > 2 && row < 6) && col > 5) { // mid right
 
-			for (int i = 3; i < 6; i++) {
-				for (int j = 6; j < SIZE; j++) {
-					if (board[i][j] == num) {
-						result = false;
-					}
-				}
-			} // MID ROW
+			if (checkSegment(board, 3, 6, 6, SIZE, num) == false) {
+				return false;
+			}
 
 			// BOTTOM ROW
 		} else if (row > 5 && col < 3) { // bottom left
-
-			for (int i = 6; i < SIZE; i++) {
-				for (int j = 0; j < 3; j++) {
-					if (board[i][j] == num) {
-						result = false;
-					}
-				}
+			if (checkSegment(board, 6, SIZE, 0, 3, num) == false) {
+				return false;
 			}
-
 		}
 
 		else if (row > 5 && (col > 2 && col < 6)) {// bottom mid
 
-			for (int i = 6; i < SIZE; i++) {
-				for (int j = 3; j < 6; j++) {
-					if (board[i][j] == num) {
-						result = false;
-					}
-				}
+			if (checkSegment(board, 6, SIZE, 3, 6, num) == false) {
+				return false;
 			}
-
 		}
 
 		else { // bottom right
 
-			for (int i = 6; i < SIZE; i++) {
-				for (int j = 6; j < SIZE; j++) {
-					if (board[i][j] == num) {
-						result = false;
-					}
-				}
+			if (checkSegment(board, 6, SIZE, 6, SIZE, num) == false) {
+				return false;
 			}
-
 		}
 		// BOTTOM ROW
 
-		return result;
+		return true;
 	}// isValid
+
+	public static boolean checkSegment(int[][] board, int rowFrom, int rowTo, int colFrom, int colTo, int num) {
+
+		for (int i = rowFrom; i < rowTo; i++) {
+
+			for (int j = colFrom; j < colTo; j++) {
+
+				if (board[i][j] == num) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean validBoardState(int[][] board) {
+		boolean result = true;
+		// check in rows
+
+		for (int row = 0; row < SIZE; row++) {
+			for (int col = 0; col < SIZE; col++) {
+				///////////////////////////////////
+
+	
+				
+				
+				///////////////////////////////////
+			}
+		}
+
+		// check in cols
+		// check in grid
+
+		return result;
+	}
 
 	public static boolean solve(int[][] board, int row, int col, boolean showSteps) {
 
@@ -195,16 +185,16 @@ public abstract class Solver {
 		return false;
 	} // solve
 
-	public static void solveWithPause(int[][] board){
+	public static void solveWithPause(int[][] board) {
 		isSolving = true;
-		solve(board,0,0,true);
+		solve(board, 0, 0, true);
 		isSolving = false;
 		JOptionPane.showMessageDialog(null, "Puzzle Solved!");
-		
+
 	}
-	
-	public static boolean getSolving(){
+
+	public static boolean getSolving() {
 		return isSolving;
 	}
-	
+
 } // Solver Class
