@@ -105,24 +105,149 @@ public abstract class Solver {
 		return true;
 	}
 
+	public static boolean duplicateFound(int[] myArray) {
+		for (int n : myArray) {
+			if (n > 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static boolean validBoardState(int[][] board) {
 		boolean result = true;
+
 		// check in rows
-
+		int[] counts = new int[SIZE];
 		for (int row = 0; row < SIZE; row++) {
+			counts = new int[SIZE];
 			for (int col = 0; col < SIZE; col++) {
-				///////////////////////////////////
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
+			}
 
-	
-				
-				
-				///////////////////////////////////
+			if(duplicateFound(counts)){
+				result = false;
+			}
+
+		} // check rows and cols
+
+		counts = new int[SIZE]; // reset counts
+
+		// TOP LEFT
+		for (int row = 0; row < 3; row++) {
+			for (int col = 0; col < 3; col++) {
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
+			}
+		}
+		if(duplicateFound(counts)){
+			result = false;
+		}
+		
+		counts = new int[SIZE];
+		// TOP MID
+		for (int row = 0; row < 3; row++) {
+			for (int col = 3; col < 6; col++) {
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
+			}
+		}
+		if(duplicateFound(counts)){
+			result = false;
+		}
+		counts = new int[SIZE];
+		// TOP RIGHT
+		for (int row = 0; row < 3; row++) {
+			for (int col = 6; col < SIZE; col++) {
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
+			}
+		}
+		if(duplicateFound(counts)){
+			result = false;
+		}
+		counts = new int[SIZE];
+		// MID LEFT
+		for (int row = 3; row < 6; row++) {
+			for (int col = 0; col < 3; col++) {
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
+			}
+		}
+		if(duplicateFound(counts)){
+			result = false;
+		}
+		counts = new int[SIZE];
+		// MID MID
+		for (int row = 3; row < 6; row++) {
+			for (int col = 3; col < 6; col++) {
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
+			}
+		}
+		if(duplicateFound(counts)){
+			result = false;
+		}
+		counts = new int[SIZE];
+		// MID RIGHT
+		for (int row = 3; row < 6; row++) {
+			for (int col = 6; col < SIZE; col++) {
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
+			}
+		}
+		if(duplicateFound(counts)){
+			result = false;
+		}
+		counts = new int[SIZE];
+		// BOTTOM LEFT
+		for (int row = 6; row < SIZE; row++) {
+			for (int col = 0; col < 3; col++) {
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
+			}
+		}
+		if(duplicateFound(counts)){
+			result = false;
+		}
+		counts = new int[SIZE];
+		// BOTTOM MID
+		for (int row = 6; row < SIZE; row++) {
+			for (int col = 3; col < 6; col++) {
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
+			}
+		}
+		
+		if(duplicateFound(counts)){
+			result = false;
+		}
+		counts = new int[SIZE];
+		
+		// BOTTOM RIGHT
+		for (int row = 6; row < SIZE; row++) {
+			for (int col = 6; col < SIZE; col++) {
+				if (board[row][col] != 0) {
+					counts[board[row][col] - 1]++;
+				}
 			}
 		}
 
-		// check in cols
-		// check in grid
-
+		if(duplicateFound(counts)){
+			result = false;
+		}
+		
+		System.out.println(result);
 		return result;
 	}
 

@@ -23,7 +23,7 @@ public class GameBoard extends JFrame {
 
 	final static int SIZE = 9;
 
-	static int waitTime = 15; // determines length of SHOW button
+	static int waitTime = 50; // determines length of SHOW button
 
 	static JLabel[][] grid = new JLabel[SIZE][SIZE];
 
@@ -109,7 +109,9 @@ public class GameBoard extends JFrame {
 
 				int[][] b = getBoard(); // get current board state
 
-				if (isEmptyBoard(b)) {
+				if (Solver.validBoardState(b) == false) {
+					JOptionPane.showMessageDialog(null, "Initial Board State Invalid");
+				} else if (isEmptyBoard(b)) {
 					JOptionPane.showMessageDialog(null, "Board is empty!");
 
 				} else if (Solver.getSolving()) {
@@ -135,23 +137,24 @@ public class GameBoard extends JFrame {
 
 				if (Solver.getSolving()) {
 					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
-				} else if(isEmptyBoard(b)){
+				} else if (Solver.validBoardState(b) == false) {
+					JOptionPane.showMessageDialog(null, "Initial Board State Invalid");
+				} else if (isEmptyBoard(b)) {
 					System.out.println("Empty Board");
-				}else if(boardFull(b)){
+				} else if (boardFull(b)) {
 					System.out.println("Full board");
-					
-				}else if (Solver.solve(c, 0, 0, false)) { // if solvable
-						makeGray();
-						CompletableFuture.runAsync(() -> Solver.solveWithPause(b));
-					} else { // not solvable
-						JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
-						showBoard(b); // show result
-					}
 
-					showBoard(b);
+				} else if (Solver.solve(c, 0, 0, false)) { // if solvable
+					makeGray();
+					CompletableFuture.runAsync(() -> Solver.solveWithPause(b));
+				} else { // not solvable
+					JOptionPane.showMessageDialog(null, "That puzzle is not solvable :(");
+					showBoard(b); // show result
 				}
+
+				showBoard(b);
 			}
-		);
+		});
 
 		randomPuzzleButton.addActionListener(new ActionListener() {
 
@@ -325,18 +328,18 @@ public class GameBoard extends JFrame {
 		return true;
 	}
 
-	public static boolean boardFull(int[][] board){
-		
-		for(int row = 0; row < SIZE; row++){
-			
-			for(int col = 0; col < SIZE; col++){
-				if(board[row][col] == 0){
+	public static boolean boardFull(int[][] board) {
+
+		for (int row = 0; row < SIZE; row++) {
+
+			for (int col = 0; col < SIZE; col++) {
+				if (board[row][col] == 0) {
 					return false;
 				}
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 } // SudokuSolver
