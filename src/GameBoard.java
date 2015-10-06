@@ -23,9 +23,10 @@ public class GameBoard extends JFrame {
 
 	final static int SIZE = 9;
 
-	static int waitTime = 50; // determines length of SHOW button
+	static int waitTime = 36; // determines length of SHOW button in ms
 
 	static JLabel[][] grid = new JLabel[SIZE][SIZE];
+	// JLabel text will be changed to update board state
 
 	// BUTTONS
 	static JButton solveButton = new JButton();
@@ -33,16 +34,17 @@ public class GameBoard extends JFrame {
 	static JButton randomPuzzleButton = new JButton();
 	static JButton enterPuzzleButton = new JButton();
 	static JButton clearButton = new JButton();
-
 	// BUTTONS
-
+	// adds buttons to the game board
+	
 	public static void main(String[] args) throws FileNotFoundException {
-
+		
 		Scanner premade = new Scanner(new FileReader("premadePuzzles.dat"));
 
 		start();
 		showBoard(randomFill(premade));
-
+		// shows a random puzzle from the .dat file
+		
 		premade.close();
 
 	} // main
@@ -59,7 +61,8 @@ public class GameBoard extends JFrame {
 		// setBackground(Color.BLUE);
 
 		setLayout(new GridLayout(SIZE + 1, SIZE, 5, 5));
-
+		// SIZE + 1 to allow for buttons on bottom row
+		
 		for (int row = 0; row < SIZE; row++) {
 			for (int col = 0; col < SIZE; col++) {
 				add(grid[row][col]);
@@ -174,19 +177,20 @@ public class GameBoard extends JFrame {
 							premade.nextLine();
 							numLines++;
 						}
-
+						// count number of puzzles in the file
 						premade.close();
 
 						premade = new Scanner(new FileReader("premadePuzzles.dat"));
 
 						Random rnd = new Random();
 						int num = rnd.nextInt(numLines);
-
+						
 						for (int i = 0; i < num; i++) {
 							premade.nextLine();
-						} // skip lines
+						} // skip lines to get the "random" puzzle
 
 						showBoard(randomFill(premade));
+						
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
 					}
@@ -197,28 +201,26 @@ public class GameBoard extends JFrame {
 		});
 
 		enterPuzzleButton.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent e) {
-				new InputGrid();
+				if(Solver.getSolving()){
+					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
+				}else{
+					new InputGrid(); // brings up second board
+				}
 			}
-
 		});
 
 		clearButton.addActionListener(new ActionListener() {
 			// Clears the board
 			public void actionPerformed(ActionEvent e) {
-
 				if (Solver.getSolving()) {
 					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
 				} else {
-
 					int[][] b = fillBoard(); // make an empty board
 					showBoard(b); // show empty board
 				}
 			}
-
 		});
-
 		// BUTTON FUNCTIONS
 
 	} // Constructor
@@ -230,16 +232,16 @@ public class GameBoard extends JFrame {
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
 				grid[i][j] = new JLabel(" ");
+				// fill grid with all empty JLabels
 			}
 		}
 		GameBoard game = new GameBoard();
 		System.out.println("Game Started!");
 
-		showBoard(board);
 	}
 
 	public static int[][] getBoard() {
-
+		// used to get the current board state
 		int[][] board = new int[SIZE][SIZE];
 
 		for (int row = 0; row < SIZE; row++) {
@@ -249,7 +251,6 @@ public class GameBoard extends JFrame {
 				} else {
 					board[row][col] = Integer.parseInt(grid[row][col].getText().trim());
 				}
-
 			}
 		}
 		return board;
@@ -281,7 +282,7 @@ public class GameBoard extends JFrame {
 		}
 
 		return board;
-	} // initBoard
+	} // fillBoard
 
 	public static int[][] fillBoard(int[][] newBoard) {
 
@@ -305,7 +306,8 @@ public class GameBoard extends JFrame {
 	}
 
 	public static int[][] randomFill(Scanner file) {
-
+		// returns a board from the .dat file
+		
 		int board[][] = new int[SIZE][SIZE];
 
 		for (int row = 0; row < SIZE; row++) {
@@ -318,6 +320,7 @@ public class GameBoard extends JFrame {
 	}
 
 	public static boolean isEmptyBoard(int[][] board) {
+		// determines if the board is empty or not
 		for (int row = 0; row < SIZE; row++) {
 			for (int col = 0; col < SIZE; col++) {
 				if (board[row][col] != 0) {
@@ -326,10 +329,10 @@ public class GameBoard extends JFrame {
 			}
 		}
 		return true;
-	}
+	} // isEmptyBoard
 
 	public static boolean boardFull(int[][] board) {
-
+		// determines if the board is full
 		for (int row = 0; row < SIZE; row++) {
 
 			for (int col = 0; col < SIZE; col++) {
@@ -338,8 +341,6 @@ public class GameBoard extends JFrame {
 				}
 			}
 		}
-
 		return true;
-	}
-
+	} // boardFull
 } // SudokuSolver

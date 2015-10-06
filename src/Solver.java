@@ -8,7 +8,7 @@ public abstract class Solver {
 	final static int SIZE = 9;
 
 	public static boolean isValid(int[][] board, int row, int col, int num) {
-
+		// determines if the position is valid for a given number
 		for (int i = 0; i < SIZE; i++) {
 			if (board[i][col] == num) {
 				return false;
@@ -93,15 +93,12 @@ public abstract class Solver {
 	public static boolean checkSegment(int[][] board, int rowFrom, int rowTo, int colFrom, int colTo, int num) {
 
 		for (int i = rowFrom; i < rowTo; i++) {
-
 			for (int j = colFrom; j < colTo; j++) {
-
 				if (board[i][j] == num) {
 					return false;
 				}
 			}
 		}
-
 		return true;
 	}
 
@@ -115,23 +112,39 @@ public abstract class Solver {
 	}
 
 	public static boolean validBoardState(int[][] board) {
-		boolean result = true;
 
-		// check in rows
+	
 		int[] counts = new int[SIZE];
 		for (int row = 0; row < SIZE; row++) {
 			counts = new int[SIZE];
-			for (int col = 0; col < SIZE; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
+			
+			for (int i = 0; i < SIZE; i++) {
+				if (board[row][i] != 0) {
+					counts[board[row][i] - 1]++;
 				}
 			}
 
 			if(duplicateFound(counts)){
-				result = false;
+				return false;
 			}
 
-		} // check rows and cols
+		} // check rows
+		
+		counts = new int[SIZE];
+		for (int col = 0; col < SIZE; col++) {
+			counts = new int[SIZE];
+			
+			for (int i = 0; i < SIZE; i++) {
+				if (board[i][col] != 0) {
+					counts[board[i][col] - 1]++;
+				}
+			}
+
+			if(duplicateFound(counts)){
+				return false;
+			}
+
+		} // check col
 
 		counts = new int[SIZE]; // reset counts
 
@@ -143,8 +156,9 @@ public abstract class Solver {
 				}
 			}
 		}
+		
 		if(duplicateFound(counts)){
-			result = false;
+			return false;
 		}
 		
 		counts = new int[SIZE];
@@ -157,7 +171,7 @@ public abstract class Solver {
 			}
 		}
 		if(duplicateFound(counts)){
-			result = false;
+			return false;
 		}
 		counts = new int[SIZE];
 		// TOP RIGHT
@@ -169,7 +183,7 @@ public abstract class Solver {
 			}
 		}
 		if(duplicateFound(counts)){
-			result = false;
+			return false;
 		}
 		counts = new int[SIZE];
 		// MID LEFT
@@ -181,7 +195,7 @@ public abstract class Solver {
 			}
 		}
 		if(duplicateFound(counts)){
-			result = false;
+			return false;
 		}
 		counts = new int[SIZE];
 		// MID MID
@@ -193,7 +207,7 @@ public abstract class Solver {
 			}
 		}
 		if(duplicateFound(counts)){
-			result = false;
+			return false;
 		}
 		counts = new int[SIZE];
 		// MID RIGHT
@@ -205,7 +219,7 @@ public abstract class Solver {
 			}
 		}
 		if(duplicateFound(counts)){
-			result = false;
+			return false;
 		}
 		counts = new int[SIZE];
 		// BOTTOM LEFT
@@ -217,7 +231,7 @@ public abstract class Solver {
 			}
 		}
 		if(duplicateFound(counts)){
-			result = false;
+			return false;
 		}
 		counts = new int[SIZE];
 		// BOTTOM MID
@@ -230,7 +244,7 @@ public abstract class Solver {
 		}
 		
 		if(duplicateFound(counts)){
-			result = false;
+			return false;
 		}
 		counts = new int[SIZE];
 		
@@ -244,11 +258,10 @@ public abstract class Solver {
 		}
 
 		if(duplicateFound(counts)){
-			result = false;
+			return false;
 		}
 		
-		System.out.println(result);
-		return result;
+		return true;
 	}
 
 	public static boolean solve(int[][] board, int row, int col, boolean showSteps) {
@@ -256,6 +269,9 @@ public abstract class Solver {
 		if (showSteps) {
 			try {
 				Thread.sleep(GameBoard.waitTime);
+				// program will pause after every "waitTime"
+				// in order to show steps, otherwise it
+				// happens too quickly
 			} catch (InterruptedException e) {
 
 				e.printStackTrace();
@@ -288,7 +304,6 @@ public abstract class Solver {
 
 				if (row == SIZE - 1 && col == SIZE - 1) {
 					GameBoard.showBoard(board);
-
 					// showBoard needed to print final value won't be reached
 					// need to add one here to update board for last time
 					return true;

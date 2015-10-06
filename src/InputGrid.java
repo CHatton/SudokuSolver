@@ -71,9 +71,8 @@ public class InputGrid extends JFrame {
 						} catch (NumberFormatException n) { // if user puts in
 															// an invalid
 															// character
-							System.out.println("Invalid Value Assigned to grid.");
+							n.printStackTrace();
 						}
-
 					}
 				}
 
@@ -91,14 +90,10 @@ public class InputGrid extends JFrame {
 					PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("premadePuzzles.dat",true)));
 					out.write("\n");
 					for(int row = 0; row < 9; row++){
-						
 						for(int col = 0; col < 9; col++){
-							
 							out.write(customBoard[row][col] + " ");
 						}	
-					}
-				//	out.write("\n");
-					
+					}	
 					out.close();
 				} catch (IOException e1) {
 					e1.printStackTrace();
