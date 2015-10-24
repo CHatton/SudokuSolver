@@ -13,16 +13,17 @@ import javax.swing.JLabel;
 
 public class InputGrid extends JFrame {
 
-	static int[][] customBoard = new int[9][9];
+	final static int SIZE = 9;
+	static int[][] customBoard = new int[SIZE][SIZE];
 
 	public InputGrid() {
 		super("Input Custom Sudoku");
 		JButton submit = new JButton();
 		JButton add = new JButton();
-		TextArea[][] in = new TextArea[9][9];
+		TextArea[][] in = new TextArea[SIZE][SIZE];
 
-		for (int row = 0; row < 9; row++) {
-			for (int col = 0; col < 9; col++) {
+		for (int row = 0; row < SIZE; row++) {
+			for (int col = 0; col < SIZE; col++) {
 				in[row][col] = new TextArea();
 			}
 		}
@@ -33,8 +34,8 @@ public class InputGrid extends JFrame {
 		setResizable(false);// user can't change the window size
 		setLayout(new GridLayout(10, 9));
 
-		for (int row = 0; row < 9; row++) {
-			for (int col = 0; col < 9; col++) {
+		for (int row = 0; row < SIZE; row++) {
+			for (int col = 0; col < SIZE; col++) {
 
 				add(in[row][col]);
 
@@ -63,14 +64,19 @@ public class InputGrid extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 				////////////////////////////////////
-				for (int row = 0; row < 9; row++) {
-					for (int col = 0; col < 9; col++) {
+				for (int row = 0; row < SIZE; row++) {
+					for (int col = 0; col < SIZE; col++) {
 
 						try {
 							customBoard[row][col] = Integer.parseInt(in[row][col].getText());
+							if (customBoard[row][col] > SIZE || customBoard[row][col] < 0) {
+								customBoard[row][col] = 0;
+							}
+
 						} catch (NumberFormatException n) { // if user puts in
 															// an invalid
 															// character
+							customBoard[row][col] = 0;
 							n.printStackTrace();
 						}
 					}
@@ -87,18 +93,18 @@ public class InputGrid extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				////////////////////////////////////
 				try {
-					PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("premadePuzzles.dat",true)));
+					PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("premadePuzzles.dat", true)));
 					out.write("\n");
-					for(int row = 0; row < 9; row++){
-						for(int col = 0; col < 9; col++){
+					for (int row = 0; row < SIZE; row++) {
+						for (int col = 0; col < SIZE; col++) {
 							out.write(customBoard[row][col] + " ");
-						}	
-					}	
+						}
+					}
 					out.close();
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-
+				System.out.println("New puzzle added!");
 				////////////////////////////////////
 			}
 

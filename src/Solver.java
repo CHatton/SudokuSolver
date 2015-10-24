@@ -113,34 +113,33 @@ public abstract class Solver {
 
 	public static boolean validBoardState(int[][] board) {
 
-	
 		int[] counts = new int[SIZE];
 		for (int row = 0; row < SIZE; row++) {
 			counts = new int[SIZE];
-			
+
 			for (int i = 0; i < SIZE; i++) {
 				if (board[row][i] != 0) {
 					counts[board[row][i] - 1]++;
 				}
 			}
 
-			if(duplicateFound(counts)){
+			if (duplicateFound(counts)) {
 				return false;
 			}
 
 		} // check rows
-		
+
 		counts = new int[SIZE];
 		for (int col = 0; col < SIZE; col++) {
 			counts = new int[SIZE];
-			
+
 			for (int i = 0; i < SIZE; i++) {
 				if (board[i][col] != 0) {
 					counts[board[i][col] - 1]++;
 				}
 			}
 
-			if(duplicateFound(counts)){
+			if (duplicateFound(counts)) {
 				return false;
 			}
 
@@ -156,11 +155,11 @@ public abstract class Solver {
 				}
 			}
 		}
-		
-		if(duplicateFound(counts)){
+
+		if (duplicateFound(counts)) {
 			return false;
 		}
-		
+
 		counts = new int[SIZE];
 		// TOP MID
 		for (int row = 0; row < 3; row++) {
@@ -170,7 +169,7 @@ public abstract class Solver {
 				}
 			}
 		}
-		if(duplicateFound(counts)){
+		if (duplicateFound(counts)) {
 			return false;
 		}
 		counts = new int[SIZE];
@@ -182,7 +181,7 @@ public abstract class Solver {
 				}
 			}
 		}
-		if(duplicateFound(counts)){
+		if (duplicateFound(counts)) {
 			return false;
 		}
 		counts = new int[SIZE];
@@ -194,7 +193,7 @@ public abstract class Solver {
 				}
 			}
 		}
-		if(duplicateFound(counts)){
+		if (duplicateFound(counts)) {
 			return false;
 		}
 		counts = new int[SIZE];
@@ -206,7 +205,7 @@ public abstract class Solver {
 				}
 			}
 		}
-		if(duplicateFound(counts)){
+		if (duplicateFound(counts)) {
 			return false;
 		}
 		counts = new int[SIZE];
@@ -218,7 +217,7 @@ public abstract class Solver {
 				}
 			}
 		}
-		if(duplicateFound(counts)){
+		if (duplicateFound(counts)) {
 			return false;
 		}
 		counts = new int[SIZE];
@@ -230,7 +229,7 @@ public abstract class Solver {
 				}
 			}
 		}
-		if(duplicateFound(counts)){
+		if (duplicateFound(counts)) {
 			return false;
 		}
 		counts = new int[SIZE];
@@ -242,12 +241,12 @@ public abstract class Solver {
 				}
 			}
 		}
-		
-		if(duplicateFound(counts)){
+
+		if (duplicateFound(counts)) {
 			return false;
 		}
 		counts = new int[SIZE];
-		
+
 		// BOTTOM RIGHT
 		for (int row = 6; row < SIZE; row++) {
 			for (int col = 6; col < SIZE; col++) {
@@ -257,10 +256,10 @@ public abstract class Solver {
 			}
 		}
 
-		if(duplicateFound(counts)){
+		if (duplicateFound(counts)) {
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -290,10 +289,10 @@ public abstract class Solver {
 			}
 
 			return solve(board, nextRow, nextCol, showSteps);
-
+			// skip the position if it is already full and solve next
 		}
-		// if it's an empty space == 0
 
+		// if it's an empty space == 0
 		for (int num = 1; num <= SIZE; num++) {
 			if (isValid(board, row, col, num)) {
 
@@ -311,17 +310,36 @@ public abstract class Solver {
 
 				// compute next position
 				boolean isSolved = solve(board, nextRow, nextCol, showSteps);
-
+				
 				if (isSolved) {
 					return true;
 				}
 
-			} // inner for
+			} // if valid
 		} // outer for
-
-		board[row][col] = 0;
 		GameBoard.grid[row][col].setBackground(new Color(0xB20000)); // red
+		GameBoard.showBoard(board); // want to show the number on a red background
+		// before deleting it
+		board[row][col] = 0;
+		
+		
+		
 		// reset position for when we attempt again
+		
+		if (showSteps) {
+			try {
+				Thread.sleep(GameBoard.waitTime);
+				// program will pause after every "waitTime"
+				// in order to show steps, otherwise it
+				// happens too quickly
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		GameBoard.grid[row][col].setBackground(Color.gray); // grey
+		GameBoard.showBoard(board);
+		
 		return false;
 	} // solve
 
