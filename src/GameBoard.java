@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
@@ -36,16 +37,12 @@ public class GameBoard extends JFrame {
 	static JButton clearButton = new JButton();
 	// BUTTONS
 	// adds buttons to the game board
-	
+
 	public static void main(String[] args) throws FileNotFoundException {
-		
-		Scanner premade = new Scanner(new FileReader("premadePuzzles.dat"));
 
 		start();
-		showBoard(randomFill(premade));
+		showBoard(randomFill(new Scanner(new FileReader("premadePuzzles.dat"))));
 		// shows a random puzzle from the .dat file
-		
-		premade.close();
 
 	} // main
 
@@ -62,7 +59,7 @@ public class GameBoard extends JFrame {
 
 		setLayout(new GridLayout(SIZE + 1, SIZE, 5, 5));
 		// SIZE + 1 to allow for buttons on bottom row
-		
+
 		for (int row = 0; row < SIZE; row++) {
 			for (int col = 0; col < SIZE; col++) {
 				add(grid[row][col]);
@@ -170,27 +167,9 @@ public class GameBoard extends JFrame {
 					Scanner premade;
 
 					try {
-						premade = new Scanner(new FileReader("premadePuzzles.dat"));
-						int numLines = 0;
 
-						while (premade.hasNext()) {
-							premade.nextLine();
-							numLines++;
-						}
-						// count number of puzzles in the file
-						premade.close();
+						showBoard(randomFill(new Scanner(new FileReader("premadePuzzles.dat"))));
 
-						premade = new Scanner(new FileReader("premadePuzzles.dat"));
-
-						Random rnd = new Random();
-						int num = rnd.nextInt(numLines);
-						
-						for (int i = 0; i < num; i++) {
-							premade.nextLine();
-						} // skip lines to get the "random" puzzle
-
-						showBoard(randomFill(premade));
-						
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
 					}
@@ -202,9 +181,9 @@ public class GameBoard extends JFrame {
 
 		enterPuzzleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(Solver.getSolving()){
+				if (Solver.getSolving()) {
 					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
-				}else{
+				} else {
 					new InputGrid(); // brings up second board
 				}
 			}
@@ -216,7 +195,8 @@ public class GameBoard extends JFrame {
 				if (Solver.getSolving()) {
 					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
 				} else {
-					int[][] b = fillBoard(); // make an empty board
+					int[][] b = fillBoard(new int[SIZE][SIZE]); // make an empty
+																// board
 					showBoard(b); // show empty board
 				}
 			}
@@ -268,20 +248,6 @@ public class GameBoard extends JFrame {
 		}
 	} // showBoard
 
-	public static int[][] fillBoard() {
-
-		int[][] board = new int[SIZE][SIZE];
-
-		for (int row = 0; row < SIZE; row++) {
-			for (int col = 0; col < SIZE; col++) {
-				grid[row][col].setBackground(Color.GRAY);
-				board[row][col] = 0;
-			}
-		}
-
-		return board;
-	} // fillBoard
-
 	public static int[][] fillBoard(int[][] newBoard) {
 
 		int[][] board = new int[SIZE][SIZE];
@@ -304,16 +270,37 @@ public class GameBoard extends JFrame {
 	}
 
 	public static int[][] randomFill(Scanner file) {
-		// returns a board from the .dat file
-		
+
+		ArrayList<String> list = new ArrayList<String>();
 		int board[][] = new int[SIZE][SIZE];
 
+		while (file.hasNext()) {
+			list.add(file.nextLine());
+		}
+
+		String[] boardOptions = new String[list.size()];
+		list.toArray(boardOptions);
+
+		Random rnd = new Random();
+		int choice = rnd.nextInt(list.size());
+
+		String[] chosenStrBoard = boardOptions[choice].split(" ");
+
+		int[] chosenBoard = new int[SIZE * SIZE];
+
+		for (int i = 0; i < chosenBoard.length; i++) {
+			chosenBoard[i] = Integer.parseInt(chosenStrBoard[i]);
+		}
+
+		int counter = 0;
 		for (int row = 0; row < SIZE; row++) {
 			for (int col = 0; col < SIZE; col++) {
-				board[row][col] = file.nextInt();
+				board[row][col] = chosenBoard[counter++];
 			}
 		}
+
 		file.close();
+
 		return board;
 	}
 

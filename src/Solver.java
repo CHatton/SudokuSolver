@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.util.HashSet;
-
 import javax.swing.JOptionPane;
 
 public abstract class Solver {
@@ -103,178 +102,142 @@ public abstract class Solver {
 		return true;
 	}
 
-	public static boolean duplicateFound(int[] myArray) {
-		/*
-		HashSet<Integer> set = new HashSet<Integer>();
-		
-		for(int n : myArray){
-			if(set.contains(n)){
-				return true;
-			}
-			set.add(n);
-		}
-		return false;
-		*/
-	
-		for (int n : myArray) {
-			if (n > 1) {
-				return true;
-			}
-		}
-		return false;
-		
-	}
-
 	public static boolean validBoardState(int[][] board) {
+		HashSet<Integer> set = new HashSet<Integer>();
 
-		int[] counts = new int[SIZE];
 		for (int row = 0; row < SIZE; row++) {
-			counts = new int[SIZE];
-
 			for (int i = 0; i < SIZE; i++) {
-				if (board[row][i] != 0) {
-					counts[board[row][i] - 1]++;
-				}
-			}
 
-			if (duplicateFound(counts)) {
-				return false;
-			}
+				if (set.contains(board[row][i]))
+					return false;
 
+				if (board[row][i] != 0)
+					set.add(board[row][i]);
+			}
+			set.clear();
 		} // check rows
 
-		counts = new int[SIZE];
 		for (int col = 0; col < SIZE; col++) {
-			counts = new int[SIZE];
-
 			for (int i = 0; i < SIZE; i++) {
-				if (board[i][col] != 0) {
-					counts[board[i][col] - 1]++;
-				}
-			}
 
-			if (duplicateFound(counts)) {
-				return false;
-			}
+				if (set.contains(board[i][col]))
+					return false;
 
+				if (board[i][col] != 0)
+					set.add(board[i][col]);
+			}
+			set.clear();
 		} // check col
-
-		counts = new int[SIZE]; // reset counts
 
 		// TOP LEFT
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 3; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
-				}
+
+				if (set.contains(board[row][col]))
+					return false;
+
+				if (board[row][col] != 0)
+					set.add(board[row][col]);
 			}
+			set.clear();
 		}
 
-		if (duplicateFound(counts)) {
-			return false;
-		}
-
-		counts = new int[SIZE];
 		// TOP MID
 		for (int row = 0; row < 3; row++) {
 			for (int col = 3; col < 6; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
-				}
+				if (set.contains(board[row][col]))
+					return false;
+
+				if (board[row][col] != 0)
+					set.add(board[row][col]);
 			}
+			set.clear();
 		}
-		if (duplicateFound(counts)) {
-			return false;
-		}
-		counts = new int[SIZE];
+
 		// TOP RIGHT
 		for (int row = 0; row < 3; row++) {
 			for (int col = 6; col < SIZE; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
-				}
+				if (set.contains(board[row][col]))
+					return false;
+
+				if (board[row][col] != 0)
+					set.add(board[row][col]);
 			}
+			set.clear();
 		}
-		if (duplicateFound(counts)) {
-			return false;
-		}
-		counts = new int[SIZE];
+
 		// MID LEFT
 		for (int row = 3; row < 6; row++) {
 			for (int col = 0; col < 3; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
-				}
+				if (set.contains(board[row][col]))
+					return false;
+
+				if (board[row][col] != 0)
+					set.add(board[row][col]);
 			}
+			set.clear();
 		}
-		if (duplicateFound(counts)) {
-			return false;
-		}
-		counts = new int[SIZE];
+
 		// MID MID
 		for (int row = 3; row < 6; row++) {
 			for (int col = 3; col < 6; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
-				}
+				if (set.contains(board[row][col]))
+					return false;
+
+				if (board[row][col] != 0)
+					set.add(board[row][col]);
 			}
+			set.clear();
 		}
-		if (duplicateFound(counts)) {
-			return false;
-		}
-		counts = new int[SIZE];
+
 		// MID RIGHT
 		for (int row = 3; row < 6; row++) {
 			for (int col = 6; col < SIZE; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
-				}
+				if (set.contains(board[row][col]))
+					return false;
+
+				if (board[row][col] != 0)
+					set.add(board[row][col]);
 			}
+			set.clear();
 		}
-		if (duplicateFound(counts)) {
-			return false;
-		}
-		counts = new int[SIZE];
+
 		// BOTTOM LEFT
 		for (int row = 6; row < SIZE; row++) {
 			for (int col = 0; col < 3; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
-				}
+				if (set.contains(board[row][col]))
+					return false;
+
+				if (board[row][col] != 0)
+					set.add(board[row][col]);
 			}
+			set.clear();
 		}
-		if (duplicateFound(counts)) {
-			return false;
-		}
-		counts = new int[SIZE];
+
 		// BOTTOM MID
 		for (int row = 6; row < SIZE; row++) {
 			for (int col = 3; col < 6; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
-				}
-			}
-		}
+				if (set.contains(board[row][col]))
+					return false;
 
-		if (duplicateFound(counts)) {
-			return false;
+				if (board[row][col] != 0)
+					set.add(board[row][col]);
+			}
+			set.clear();
 		}
-		counts = new int[SIZE];
 
 		// BOTTOM RIGHT
 		for (int row = 6; row < SIZE; row++) {
 			for (int col = 6; col < SIZE; col++) {
-				if (board[row][col] != 0) {
-					counts[board[row][col] - 1]++;
-				}
+				if (set.contains(board[row][col]))
+					return false;
+
+				if (board[row][col] != 0)
+					set.add(board[row][col]);
 			}
+			set.clear();
 		}
-
-		if (duplicateFound(counts)) {
-			return false;
-		}
-
-		return true;
+		return true; // if every secion is valid, the board is valid
 	}
 
 	public static boolean solve(int[][] board, int row, int col, boolean showSteps) {
@@ -306,13 +269,13 @@ public abstract class Solver {
 
 		// if it's an empty space == 0
 		for (int num = 1; num <= SIZE; num++) {
-			
+
 			if (isValid(board, row, col, num)) {
 
 				board[row][col] = num;
 				GameBoard.grid[row][col].setBackground(new Color(0x007D00)); // green
 				GameBoard.showBoard(board);
-				
+
 				// assign a valid number to the position
 
 				if (row == SIZE - 1 && col == SIZE - 1) {
@@ -324,15 +287,14 @@ public abstract class Solver {
 
 				// compute next position
 				boolean isSolved = solve(board, nextRow, nextCol, showSteps);
-				
+
 				if (isSolved) {
 					return true;
 				}
 
 			} // if valid
 		} // outer for
-		
-		
+
 		GameBoard.grid[row][col].setBackground(new Color(0xB20000)); // red
 		board[row][col] = 0; // reset position for when we attempt again
 		GameBoard.showBoard(board);
@@ -344,11 +306,10 @@ public abstract class Solver {
 				e.printStackTrace();
 			}
 		} // wait
-		
-		
+
 		GameBoard.grid[row][col].setBackground(Color.gray); // grey
 		GameBoard.showBoard(board);
-		
+
 		return false;
 	} // solve
 

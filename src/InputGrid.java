@@ -58,7 +58,7 @@ public class InputGrid extends JFrame {
 		submit.setToolTipText("Submit your custom puzzle");
 
 		add.setText("ADD");
-		add.setToolTipText("Save custom puzzle");
+		add.setToolTipText("Save custom puzzle (Be sure to hit OK on your new puzzle first!)");
 
 		submit.addActionListener(new ActionListener() {
 
