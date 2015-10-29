@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.util.HashSet;
 
 import javax.swing.JOptionPane;
 
@@ -103,12 +104,25 @@ public abstract class Solver {
 	}
 
 	public static boolean duplicateFound(int[] myArray) {
+		/*
+		HashSet<Integer> set = new HashSet<Integer>();
+		
+		for(int n : myArray){
+			if(set.contains(n)){
+				return true;
+			}
+			set.add(n);
+		}
+		return false;
+		*/
+	
 		for (int n : myArray) {
 			if (n > 1) {
 				return true;
 			}
 		}
 		return false;
+		
 	}
 
 	public static boolean validBoardState(int[][] board) {
@@ -272,10 +286,8 @@ public abstract class Solver {
 				// in order to show steps, otherwise it
 				// happens too quickly
 			} catch (InterruptedException e) {
-
 				e.printStackTrace();
 			}
-
 		}
 
 		GameBoard.showBoard(board);
@@ -294,11 +306,13 @@ public abstract class Solver {
 
 		// if it's an empty space == 0
 		for (int num = 1; num <= SIZE; num++) {
+			
 			if (isValid(board, row, col, num)) {
 
 				board[row][col] = num;
 				GameBoard.grid[row][col].setBackground(new Color(0x007D00)); // green
-
+				GameBoard.showBoard(board);
+				
 				// assign a valid number to the position
 
 				if (row == SIZE - 1 && col == SIZE - 1) {
@@ -317,25 +331,20 @@ public abstract class Solver {
 
 			} // if valid
 		} // outer for
+		
+		
 		GameBoard.grid[row][col].setBackground(new Color(0xB20000)); // red
-		GameBoard.showBoard(board); // want to show the number on a red background
-		// before deleting it
-		board[row][col] = 0;
-		
-		
-		
-		// reset position for when we attempt again
-		
+		board[row][col] = 0; // reset position for when we attempt again
+		GameBoard.showBoard(board);
+
 		if (showSteps) {
 			try {
 				Thread.sleep(GameBoard.waitTime);
-				// program will pause after every "waitTime"
-				// in order to show steps, otherwise it
-				// happens too quickly
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		} // wait
+		
 		
 		GameBoard.grid[row][col].setBackground(Color.gray); // grey
 		GameBoard.showBoard(board);

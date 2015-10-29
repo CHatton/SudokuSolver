@@ -23,7 +23,7 @@ public class GameBoard extends JFrame {
 
 	final static int SIZE = 9;
 
-	static int waitTime = 70; // determines length of SHOW button in ms
+	static int waitTime = 125; // determines length of SHOW button in ms
 
 	static JLabel[][] grid = new JLabel[SIZE][SIZE];
 	// JLabel text will be changed to update board state
