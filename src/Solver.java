@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.util.HashSet;
+
 import javax.swing.JOptionPane;
 
 public abstract class Solver {
@@ -104,6 +105,7 @@ public abstract class Solver {
 
 	public static boolean validBoardState(int[][] board) {
 		HashSet<Integer> set = new HashSet<Integer>();
+		int rootSize = (int) Math.sqrt(SIZE);
 
 		for (int row = 0; row < SIZE; row++) {
 			for (int i = 0; i < SIZE; i++) {
@@ -130,8 +132,8 @@ public abstract class Solver {
 		} // check col
 
 		// TOP LEFT
-		for (int row = 0; row < 3; row++) {
-			for (int col = 0; col < 3; col++) {
+		for (int row = 0; row < rootSize; row++) {
+			for (int col = 0; col < rootSize; col++) {
 
 				if (set.contains(board[row][col]))
 					return false;
@@ -143,8 +145,8 @@ public abstract class Solver {
 		}
 
 		// TOP MID
-		for (int row = 0; row < 3; row++) {
-			for (int col = 3; col < 6; col++) {
+		for (int row = 0; row < rootSize; row++) {
+			for (int col = rootSize; col < rootSize * 2; col++) {
 				if (set.contains(board[row][col]))
 					return false;
 
@@ -155,8 +157,8 @@ public abstract class Solver {
 		}
 
 		// TOP RIGHT
-		for (int row = 0; row < 3; row++) {
-			for (int col = 6; col < SIZE; col++) {
+		for (int row = 0; row < rootSize; row++) {
+			for (int col = rootSize * 2; col < SIZE; col++) {
 				if (set.contains(board[row][col]))
 					return false;
 
@@ -167,8 +169,8 @@ public abstract class Solver {
 		}
 
 		// MID LEFT
-		for (int row = 3; row < 6; row++) {
-			for (int col = 0; col < 3; col++) {
+		for (int row = rootSize; row < rootSize * 2; row++) {
+			for (int col = 0; col < rootSize; col++) {
 				if (set.contains(board[row][col]))
 					return false;
 
@@ -179,8 +181,8 @@ public abstract class Solver {
 		}
 
 		// MID MID
-		for (int row = 3; row < 6; row++) {
-			for (int col = 3; col < 6; col++) {
+		for (int row = rootSize; row < rootSize * 2; row++) {
+			for (int col = rootSize; col < rootSize * 2; col++) {
 				if (set.contains(board[row][col]))
 					return false;
 
@@ -191,8 +193,8 @@ public abstract class Solver {
 		}
 
 		// MID RIGHT
-		for (int row = 3; row < 6; row++) {
-			for (int col = 6; col < SIZE; col++) {
+		for (int row = rootSize; row < rootSize * 2; row++) {
+			for (int col = rootSize * 2; col < SIZE; col++) {
 				if (set.contains(board[row][col]))
 					return false;
 
@@ -203,8 +205,8 @@ public abstract class Solver {
 		}
 
 		// BOTTOM LEFT
-		for (int row = 6; row < SIZE; row++) {
-			for (int col = 0; col < 3; col++) {
+		for (int row = rootSize * 2; row < SIZE; row++) {
+			for (int col = 0; col < rootSize; col++) {
 				if (set.contains(board[row][col]))
 					return false;
 
@@ -215,8 +217,8 @@ public abstract class Solver {
 		}
 
 		// BOTTOM MID
-		for (int row = 6; row < SIZE; row++) {
-			for (int col = 3; col < 6; col++) {
+		for (int row = rootSize * 2; row < SIZE; row++) {
+			for (int col = rootSize; col < rootSize * 2; col++) {
 				if (set.contains(board[row][col]))
 					return false;
 
@@ -227,8 +229,8 @@ public abstract class Solver {
 		}
 
 		// BOTTOM RIGHT
-		for (int row = 6; row < SIZE; row++) {
-			for (int col = 6; col < SIZE; col++) {
+		for (int row = rootSize * 2; row < SIZE; row++) {
+			for (int col = rootSize * 2; col < SIZE; col++) {
 				if (set.contains(board[row][col]))
 					return false;
 
@@ -243,14 +245,7 @@ public abstract class Solver {
 	public static boolean solve(int[][] board, int row, int col, boolean showSteps) {
 
 		if (showSteps) {
-			try {
-				Thread.sleep(GameBoard.waitTime);
-				// program will pause after every "waitTime"
-				// in order to show steps, otherwise it
-				// happens too quickly
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			pause();
 		}
 
 		GameBoard.showBoard(board);
@@ -259,12 +254,26 @@ public abstract class Solver {
 		int nextCol = (nextRow == 0) ? col + 1 : col;
 
 		if (board[row][col] > 0) {
+
+			GameBoard.grid[row][col].setBackground(new Color(0x007D00)); // green
+
+		
+			
 			if (row == SIZE - 1 && col == SIZE - 1) {
 				return true; // solved the board!
 			}
 
-			return solve(board, nextRow, nextCol, showSteps);
-			// skip the position if it is already full and solve next
+			boolean isSolvable = solve(board, nextRow, nextCol, showSteps);
+
+			if (!isSolvable) {
+				GameBoard.grid[row][col].setBackground(new Color(0x518191));
+			}
+			
+			if (showSteps) {
+				pause();
+			}
+
+			return isSolvable;
 		}
 
 		// if it's an empty space == 0
@@ -272,11 +281,9 @@ public abstract class Solver {
 
 			if (isValid(board, row, col, num)) {
 
-				board[row][col] = num;
+				board[row][col] = num; // assign a valid number to the position
 				GameBoard.grid[row][col].setBackground(new Color(0x007D00)); // green
 				GameBoard.showBoard(board);
-
-				// assign a valid number to the position
 
 				if (row == SIZE - 1 && col == SIZE - 1) {
 					GameBoard.showBoard(board);
@@ -300,14 +307,10 @@ public abstract class Solver {
 		GameBoard.showBoard(board);
 
 		if (showSteps) {
-			try {
-				Thread.sleep(GameBoard.waitTime);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		} // wait
+			pause();
+		}
 
-		GameBoard.grid[row][col].setBackground(Color.gray); // grey
+		GameBoard.grid[row][col].setBackground(new Color(0x518191)); // grey
 		GameBoard.showBoard(board);
 
 		return false;
@@ -318,6 +321,19 @@ public abstract class Solver {
 		solve(board, 0, 0, true);
 		isSolving = false;
 		JOptionPane.showMessageDialog(null, "Puzzle Solved!");
+
+	}
+
+	public static void pause() {
+
+		try {
+			Thread.sleep(GameBoard.waitTime);
+			// program will pause after every "waitTime"
+			// in order to show steps, otherwise it
+			// happens too quickly
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 	}
 

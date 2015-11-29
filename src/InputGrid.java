@@ -30,7 +30,7 @@ public class InputGrid extends JFrame {
 
 		setVisible(true); // makes it visible
 		setLocationRelativeTo(null); // centered
-		setSize(550, 550); // creates a 900x800 window
+		setSize(550, 550); // creates a 550x550 window
 		setResizable(false);// user can't change the window size
 		setLayout(new GridLayout(10, 9));
 
@@ -66,7 +66,6 @@ public class InputGrid extends JFrame {
 				////////////////////////////////////
 				for (int row = 0; row < SIZE; row++) {
 					for (int col = 0; col < SIZE; col++) {
-
 						try {
 							customBoard[row][col] = Integer.parseInt(in[row][col].getText());
 							if (customBoard[row][col] > SIZE || customBoard[row][col] < 0) {

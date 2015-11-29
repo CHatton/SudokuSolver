@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -40,8 +39,18 @@ public class GameBoard extends JFrame {
 
 	public static void main(String[] args) throws FileNotFoundException {
 
-		start();
-		showBoard(randomFill(new Scanner(new FileReader("premadePuzzles.dat"))));
+		// Scanner premade = new Scanner();
+		try {
+			Scanner premade = new Scanner(new FileReader("premadePuzzles.dat"));
+			start();
+			showBoard(randomFill(premade));
+
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(null,
+					"Please make sure the file 'premadePuzzles.dat' is in the same folder as the Sudoku Solver!    ");
+			System.exit(0);
+		}
+
 		// shows a random puzzle from the .dat file
 
 	} // main
@@ -53,18 +62,18 @@ public class GameBoard extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // closes with X
 		setVisible(true); // makes it visible
 		setLocationRelativeTo(null); // centered
-		setSize(800, 800); // creates an 800x800 window
+		setSize(850, 850); // creates an 850x850 window
 		setResizable(false);// user can't change the window size
 		// setBackground(Color.BLUE);
 
-		setLayout(new GridLayout(SIZE + 1, SIZE, 5, 5));
+		setLayout(new GridLayout(SIZE + 1, SIZE, 3, 3));
 		// SIZE + 1 to allow for buttons on bottom row
-
+		
 		for (int row = 0; row < SIZE; row++) {
 			for (int col = 0; col < SIZE; col++) {
 				add(grid[row][col]);
-				grid[row][col].setBackground(Color.GRAY);
-				grid[row][col].setFont(new Font("Serif", Font.PLAIN, 90));
+				grid[row][col].setBackground(new Color(0x518191));
+				grid[row][col].setFont(new Font("Forte", Font.PLAIN, 90));
 				grid[row][col].setOpaque(true); // otherwise can't see the
 				// background colour change
 				grid[row][col].setBorder(BorderFactory.createLineBorder(Color.black));
@@ -163,17 +172,11 @@ public class GameBoard extends JFrame {
 				if (Solver.getSolving()) {
 					JOptionPane.showMessageDialog(null, "STILL SOLVING!");
 				} else {
-
-					Scanner premade;
-
 					try {
-
 						showBoard(randomFill(new Scanner(new FileReader("premadePuzzles.dat"))));
-
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
 					}
-
 					makeGray();
 				}
 			}
@@ -264,7 +267,7 @@ public class GameBoard extends JFrame {
 	public static void makeGray() {
 		for (int row = 0; row < SIZE; row++) {
 			for (int col = 0; col < SIZE; col++) {
-				grid[row][col].setBackground(Color.GRAY);
+				grid[row][col].setBackground(new Color(0x518191));
 			}
 		}
 	}
@@ -276,26 +279,29 @@ public class GameBoard extends JFrame {
 
 		while (file.hasNext()) {
 			list.add(file.nextLine());
-		}
+		} // add possible puzzles to the list
 
 		String[] boardOptions = new String[list.size()];
-		list.toArray(boardOptions);
+		// create array to hold the possible boards
+		list.toArray(boardOptions); // convert from list to array
 
-		Random rnd = new Random();
-		int choice = rnd.nextInt(list.size());
+		Random rnd = new Random(); // for random numbers
+		int choice = rnd.nextInt(list.size()); // pick a random position
 
 		String[] chosenStrBoard = boardOptions[choice].split(" ");
+		// split string into 81 size array
 
-		int[] chosenBoard = new int[SIZE * SIZE];
+		int[] chosenBoard = new int[SIZE * SIZE]; // create array to hold ints
 
 		for (int i = 0; i < chosenBoard.length; i++) {
 			chosenBoard[i] = Integer.parseInt(chosenStrBoard[i]);
-		}
+		} // populate int array
 
 		int counter = 0;
 		for (int row = 0; row < SIZE; row++) {
 			for (int col = 0; col < SIZE; col++) {
 				board[row][col] = chosenBoard[counter++];
+				// fill board with the randomly chosen board
 			}
 		}
 
